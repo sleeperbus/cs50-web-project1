@@ -1,0 +1,9 @@
+{% extends "default.html" %}
+
+{% block body %}
+<h1>You got some error: {{ message }}</h1>
+{% if login_url %}
+    <a href="{{ url_for('index') }}" >click here to go back login page</a>
+{% endif %}
+
+{% endblock %}

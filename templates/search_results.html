@@ -1,0 +1,43 @@
+{% extends "default.html" %}
+
+{% block body %}
+<div class="container">
+    <form class="form-search " action="{{ url_for('book_search') }}" method="POST">
+        <div class="form-group">
+            <input type="text" name="keyword" class="form-control" placeholder="{{ book_keyword }}">
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="container">
+    
+    {% if books %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Publication Year</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                    <tr>
+                       <td><a href="{{ url_for('book', isbn=book.isbn) }}">{{ book.isbn }}</a></td>
+                       <td>{{ book.title }}</td> 
+                       <td>{{ book.author }}</td> 
+                       <td>{{ book.pub_year }}</td> 
+                    </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+    {% else %}
+        <h1 class="text-center">No such books</h1>
+    {% endif %}
+
+</div>
+{% endblock %}

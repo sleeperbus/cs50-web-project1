@@ -1,0 +1,67 @@
+{% extends "default.html" %}
+
+{% block body %}
+<div id="book_info" class="text-center">
+    <h1>Book Infomation</h1>
+    <table class="table table-hover book-table">
+        <tbody>
+            <tr>
+                <td>ISBN</td> 
+                <td>{{ aBook.isbn }}</td>
+            </tr>
+            <tr>
+                <td>Title</td> 
+                <td>{{ aBook.title }}</td>
+            </tr>
+            <tr>
+                <td>Author</td> 
+                <td>{{ aBook.author }}</td>
+            </tr>
+            <tr>
+                <td>Publication Year</td> 
+                <td>{{ aBook.pub_year }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container review">
+    <form action="{{ url_for('add_review', isbn=aBook.isbn, username=username) }}" method="POST">
+        <div class="form-group"> 
+            <label>Leave your review</label>
+            <textarea class="form-control" name="user_review" rows="4"></textarea>
+        </div>
+        <button class="btn btn-primary">Submit</button>
+
+    </form>
+</div>
+
+<div id="reviews" class="review">
+    <h2>Reviews</h2>
+    {% if reviews %}
+        {% for review in reviews %}
+            <p>{{ review.review }}</p>
+            {% if review.username == username %}
+                <a href="{{ url_for('delete_review', _method='POST', isbn=aBook.isbn, username=username) }}">delete</a>
+            {% endif %}
+        {% endfor %}
+
+    {% else %}
+    <p>No Reiviews</p>
+    {% endif %}
+</div>
+
+{% if rating %}
+<div class="review">
+    <h2>From GoodReads.com</h2>
+    <h3>Rating count: {{ rating['count'] }}</h5>
+    <h3>Average Rating: {{ rating['avg_rating'] }}</h5>
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

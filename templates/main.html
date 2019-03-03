@@ -1,0 +1,12 @@
+{% extends "default.html" %}
+
+{% block body %}
+<div class="container">
+    <form class="form-search " action="{{ url_for('book_search') }}" method="POST">
+        <div class="form-group">
+            <input type="text" name="keyword" placeholder="search books" class="form-control">
+        </div>
+    </form>
+</div>
+{% endblock %}
+
