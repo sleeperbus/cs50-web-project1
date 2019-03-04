@@ -141,7 +141,7 @@ def add_review(isbn, username):
     return redirect(url_for('book', isbn=isbn))
 
 
-@app.route("/delete_review/<isbn>/<username>", methods=["GET", "POST"])
+@app.route("/delete_review/<isbn>/<username>", methods=["POST"])
 def delete_review(isbn, username):
     if request.method == "POST":
         db.delete_review(isbn, username)

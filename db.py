@@ -94,6 +94,6 @@ def delete_review(isbn, username):
     """
     book_id = book_info(isbn).book_id
     user_id = user_info(username).user_id
-    db.execute("delete book_reviews where book_id = :book_id and user_id = :user_id", {'book_id': book_id, 'user_id': user_id})
+    db.execute("delete from book_reviews where book_id = :book_id and user_id = :user_id", {'book_id': book_id, 'user_id': user_id})
     db.commit()
 

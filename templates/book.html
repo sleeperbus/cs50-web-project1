@@ -40,9 +40,15 @@
     <h2>Reviews</h2>
     {% if reviews %}
         {% for review in reviews %}
-            <p>{{ review.review }}</p>
+        
+            <p>
+            {{ review.review }}
             {% if review.username == username %}
-                <a href="{{ url_for('delete_review', _method='POST', isbn=aBook.isbn, username=username) }}">delete</a>
+                <form action="{{ url_for('delete_review', isbn=aBook.isbn, username=username) }}" method="POST">
+                    <input type="hidden" name="isbn" value={{ aBook.isbn }}>
+                    <button class="btn btn-warning btn-sm">Delete review</button>
+                </form>
+            </p>
             {% endif %}
         {% endfor %}
 
