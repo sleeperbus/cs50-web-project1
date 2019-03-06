@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 
 from flask import Flask, session, render_template, request, redirect, url_for
 from flask_session import Session
@@ -133,11 +134,12 @@ def book(isbn):
 @app.route("/add_review/<isbn>/<username>", methods=["POST"])
 def add_review(isbn, username):
     review = request.form.get("user_review")
+    rating = request.form.get("user_rating")
 
     if review is None or len(review) == 0:
-        return redirect(url_for('book',isbn=isbn))
+        return redirect(url_for('book', isbn=isbn))
 
-    db.add_review(isbn, username, review)
+    db.add_review(isbn, username, review, rating)
     return redirect(url_for('book', isbn=isbn))
 
 
@@ -146,6 +148,18 @@ def delete_review(isbn, username):
     if request.method == "POST":
         db.delete_review(isbn, username)
     return redirect(url_for('book', isbn=isbn))
+
+
+@app.route("/api/<isbn>")
+def api_book_info(isbn):
+    """
+    support external api
+    """
+    aBook = db.book_info(isbn)
+    rating = bookinfo_goodreads(isbn)
+    res = {"title": aBook.title, "author": aBook.author, "year": aBook.pub_year,
+           "isbn": isbn, "review_count": rating["count"], "average_score": rating["avg_rating"]}
+    return json.dumps(res)
 
 
 def bookinfo_goodreads(isbn):

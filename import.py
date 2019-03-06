@@ -1,5 +1,5 @@
 import csv 
-from application  import db 
+from db  import db 
 
 with open('books.csv', 'r') as f:
     books = csv.reader(f)

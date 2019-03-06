@@ -2,6 +2,7 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.exc import IntegrityError
 
 
 # Set up database
@@ -57,7 +58,7 @@ def book_info(isbn):
     """
     return single book info
     """
-    return db.execute("select * from books where isbn =:isbn", {'isbn': isbn}).fetchone()
+    return db.execute("select book_id, isbn, title, author, pub_year from books where isbn =:isbn", {'isbn': isbn}).fetchone()
 
 
 def book_reviews(book_id):
@@ -69,6 +70,7 @@ def book_reviews(book_id):
             , a.review
             , a.user_id
             , b.username
+            , a.rating
     from    book_reviews a 
             , account b
     where   a.book_id = :book_id
@@ -77,16 +79,41 @@ def book_reviews(book_id):
     return db.execute(sql, {'book_id': book_id}).fetchall()
 
 
-def add_review(isbn, username, review):
+def add_review(isbn, username, review, rating):
     """
     add user review to book
     """
     book_id = book_info(isbn).book_id
     user_id = user_info(username).user_id
-    db.execute("insert into book_reviews(book_id, user_id, review) values(:book_id, :user_id, :review)",
-               {'book_id': book_id, 'user_id': user_id, 'review': review})
-    db.commit()
+    try:
+        db.execute("insert into book_reviews(book_id, user_id, review, rating) values(:book_id, :user_id, :review, :rating)",
+               {'book_id': book_id, 'user_id': user_id, 'review': review, 'rating': rating})
+    except IntegrityError as e:
+        db.rollback()        
+        update_review(isbn, username, review, rating)
+    else:
+        db.commit()
 
+
+def update_review(isbn, username, review, rating):
+    """
+    update user review
+    """
+    book_id = book_info(isbn).book_id
+    user_id = user_info(username).user_id
+    
+    sql ="""
+    update  book_reviews
+    set     review = :review
+            , rating =  :rating
+    where   book_id = :book_id
+    and     user_id = :user_id
+    """
+    
+    db.execute(sql, {'book_id': book_id, 'user_id': user_id, 'review': review, 'rating': rating})
+    db.commit()
+    
+    
 
 def delete_review(isbn, username):
     """

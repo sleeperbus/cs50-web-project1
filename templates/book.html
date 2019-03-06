@@ -27,6 +27,22 @@
 
 <div class="container review">
     <form action="{{ url_for('add_review', isbn=aBook.isbn, username=username) }}" method="POST">
+        <div class="form-group">
+            <label for="rating">Rate This Book</label>
+            {% for review in reviews %}
+                {% if review.username == username %}
+                <p>You already review this book. Another review will replace older.</p>
+                {% endif %}
+            {% endfor %}
+            <select class="form-control" id="ratingControl" name="user_rating">
+                <option>0</option>                
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
         <div class="form-group"> 
             <label>Leave your review</label>
             <textarea class="form-control" name="user_review" rows="4"></textarea>
@@ -36,38 +52,48 @@
     </form>
 </div>
 
-<div id="reviews" class="review">
-    <h2>Reviews</h2>
+<div id="reviews">
     {% if reviews %}
-        {% for review in reviews %}
+
+    <div class="container">
+        <h2>Reviews</h2>
+        <div class="row">
+            {% for review in reviews %}                    
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ review.username }}(rate:{{ review.rating }})</title>
+                            <p class="card-text">{{ review.review }}</p>
+                            {% if review.username == username %}
+                            <form action="{{ url_for('delete_review', isbn=aBook.isbn, username=username) }}" method="POST">
+                                <input type="hidden" name="isbn" value={{ aBook.isbn }}>
+                                <button class="btn btn-warning btn-sm">Delete review</button>
+                            </form>
+                            {% endif %}                                
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}                    
+            </div>
+        </div>
         
-            <p>
-            {{ review.review }}
-            {% if review.username == username %}
-                <form action="{{ url_for('delete_review', isbn=aBook.isbn, username=username) }}" method="POST">
-                    <input type="hidden" name="isbn" value={{ aBook.isbn }}>
-                    <button class="btn btn-warning btn-sm">Delete review</button>
-                </form>
-            </p>
+
+        {% else %}
+        <p>No Reiviews</p>
+        {% endif %}
+    </div>
+
+    {% if rating %}
+    <div class="review">
+        <h2>From GoodReads.com</h2>
+        <h3>Rating count: {{ rating['count'] }}</h5>
+            <h3>Average Rating: {{ rating['avg_rating'] }}</h5>
+            </div>
             {% endif %}
-        {% endfor %}
-
-    {% else %}
-    <p>No Reiviews</p>
-    {% endif %}
-</div>
-
-{% if rating %}
-<div class="review">
-    <h2>From GoodReads.com</h2>
-    <h3>Rating count: {{ rating['count'] }}</h5>
-    <h3>Average Rating: {{ rating['avg_rating'] }}</h5>
-</div>
-{% endif %}
 
 
-{% endblock %}
+            {% endblock %}
 
-{% block footer %}
+            {% block footer %}
 
-{% endblock %}
+            {% endblock %}
